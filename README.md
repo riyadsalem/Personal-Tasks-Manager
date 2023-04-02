@@ -1,4 +1,4 @@
 ### `PERSONAL TASKS MANAGER`
-# ....: FC<PropsInterface> = ({..items}): ReactElement => {}
+# ____-____: FC<PropsInterface> = ({..items}): ReactElement => {}
 
 
