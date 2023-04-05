@@ -3,6 +3,7 @@ import React, { FC, ReactElement } from 'react';
 import { format } from 'date-fns';
 import { TaskCounter } from './taskCounter';
 import { Status } from '../sidebar/createTaskForm/enums/Status';
+import { Task } from './task';
 
 export const TaskArea: FC = (): ReactElement => {
   return (
@@ -45,8 +46,9 @@ export const TaskArea: FC = (): ReactElement => {
           md={8}
           xs={10}
         >
-          <Box>Tasks Will Come Over Here</Box>
-          <Box>Tasks Will Come Over Here</Box>
+          <Task />
+          <Task />
+          <Task />
         </Grid>
       </Grid>
     </Grid>
