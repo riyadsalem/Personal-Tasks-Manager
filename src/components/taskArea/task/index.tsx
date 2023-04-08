@@ -5,13 +5,16 @@ import { Priority } from '../../sidebar/createTaskForm/enums/Priority';
 import { Status } from '../../sidebar/createTaskForm/enums/Status';
 import PropTypes from 'prop-types';
 import { renderPriorityBorderColor } from './helpers/renderPriorityBorderColor';
+import { TaskHeader } from './_taskHeader';
+import { TaskDescription } from './_taskDescription';
+import { TaskFooter } from './_taskFooter';
 
 export const Task: FC<ITask> = (props): ReactElement => {
   const {
     title = 'Test Title',
     date = new Date(),
     description = 'Lorem ipsum dolor sit amet',
-    priority = Priority,
+    priority = Priority.normal,
     status = Status.completed,
     onStatusChange = (e) => console.log(e),
     onClick = (e) => console.log(e),
@@ -33,7 +36,12 @@ export const Task: FC<ITask> = (props): ReactElement => {
         borderColor: renderPriorityBorderColor(priority),
       }}
     >
-      Tasks Will Come Over Here
+      <TaskHeader title={title} date={date} />
+      <TaskDescription description={description} />
+      <TaskFooter
+        onClick={onClick}
+        onStatusChange={onStatusChange}
+      />
     </Box>
   );
 };
