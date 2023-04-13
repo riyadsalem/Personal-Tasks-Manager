@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import Task from './tasks.entity';
 import { AppDataSource } from '../../index';
 
@@ -9,24 +8,20 @@ export class TasksController {
     ),
   ) {}
   // Method for the get route
-  public async getAll(
-    req: Request,
-    res: Response,
-  ): Promise<Task[]> {
-    // Declare a variable to hold all tasks
+  public async getAll() {
     let allTasks: Task[];
 
-    // Fetch all tasks using the repository
     try {
       allTasks = await this.taskRepository.find({
         order: {
           date: 'ASC',
         },
       });
+      console.log(allTasks);
     } catch (err) {
       console.log(err);
     }
   }
 }
 
-export const taskController = new TasksController();
+// export const taskController = new TasksController();
