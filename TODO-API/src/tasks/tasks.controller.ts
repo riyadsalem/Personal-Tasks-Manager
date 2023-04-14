@@ -40,6 +40,11 @@ export class TasksController {
         .status(500);
     }
   }
+
+  // Method for the post route
+  public async create(req: Request, res: Response) {
+    console.log('This is Create Method');
+  }
 }
 
 export const taskController = new TasksController();
