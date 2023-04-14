@@ -79,6 +79,7 @@ export class TasksController {
         Task,
       ).save(newTask);
 
+      console.log(createdTask);
       // Convert the task instance to an object
       createdTask = instanceToPlain(createdTask) as Task;
 
@@ -88,6 +89,10 @@ export class TasksController {
         .json({ error: 'Internal Server Error' })
         .status(500);
     }
+  }
+
+  public async update(req: Request, res: Response) {
+    console.log('This is update Method');
   }
 }
 
