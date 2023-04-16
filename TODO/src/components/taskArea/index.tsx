@@ -4,17 +4,20 @@ import {
   Alert,
   LinearProgress,
 } from '@mui/material';
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useRef } from 'react';
 import { format } from 'date-fns';
 import { TaskCounter } from './taskCounter';
 import { Status } from '../sidebar/createTaskForm/enums/Status';
 import { Task } from './task';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { sendApiRequest } from '../../helpers/sendApiRequest';
 import { ITaskApi } from './interfaces/ITaskAPI';
+import IUpdateTask from './task/interface/IUpdateTask';
 
 export const TaskArea: FC = (): ReactElement => {
-  const { error, isLoading, data, refetch } = useQuery(
+  const taskRef = useRef<HTMLElement | null>(null);
+
+  const { error, isLoading, data } = useQuery(
     'tasks',
     async () => {
       return await sendApiRequest<ITaskApi[]>(
@@ -23,6 +26,43 @@ export const TaskArea: FC = (): ReactElement => {
       );
     },
   );
+
+  // update task mutation
+  const updateTaskMutation = useMutation(
+    (data: IUpdateTask) =>
+      sendApiRequest(
+        'http://localhost:3200/tasks',
+        'PUT',
+        data,
+      ),
+  );
+
+  function onStatusChangeHandler(
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+  ) {
+    updateTaskMutation.mutate({
+      id,
+      status: e.target.checked
+        ? Status.inProgress
+        : Status.todo,
+    });
+  }
+
+  function markCompleteHandler(
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) {
+    updateTaskMutation.mutate({
+      id,
+      status: Status.completed,
+    });
+    if (taskRef.current) {
+      taskRef.current.remove();
+    }
+  }
 
   return (
     <Grid item md={8} px={4}>
@@ -88,15 +128,19 @@ export const TaskArea: FC = (): ReactElement => {
               data.map((each, index) => {
                 return each.status === Status.todo ||
                   each.status === Status.inProgress ? (
-                  <Task
-                    key={index + each.priority}
-                    id={each.id}
-                    title={each.title}
-                    date={new Date(each.date)}
-                    description={each.description}
-                    priority={each.priority}
-                    status={each.status}
-                  />
+                  <Box ref={taskRef}>
+                    <Task
+                      key={index + each.priority}
+                      id={each.id}
+                      title={each.title}
+                      date={new Date(each.date)}
+                      description={each.description}
+                      priority={each.priority}
+                      status={each.status}
+                      onStatusChange={onStatusChangeHandler}
+                      onClick={markCompleteHandler}
+                    />
+                  </Box>
                 ) : (
                   false
                 );
