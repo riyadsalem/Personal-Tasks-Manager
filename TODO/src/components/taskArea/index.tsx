@@ -13,6 +13,7 @@ import { useMutation, useQuery } from 'react-query';
 import { sendApiRequest } from '../../helpers/sendApiRequest';
 import { ITaskApi } from './interfaces/ITaskAPI';
 import IUpdateTask from './task/interface/IUpdateTask';
+import { countTasks } from './taskCounter/helpers/countTasks';
 
 export const TaskArea: FC = (): ReactElement => {
   const taskRef = useRef<HTMLElement | null>(null);
@@ -87,13 +88,20 @@ export const TaskArea: FC = (): ReactElement => {
           xs={12}
           mb={8}
         >
-          <TaskCounter count={10} status={Status.todo} />
           <TaskCounter
-            count={5}
+            count={data && countTasks(data, Status.todo)}
+            status={Status.todo}
+          />
+          <TaskCounter
+            count={
+              data && countTasks(data, Status.inProgress)
+            }
             status={Status.inProgress}
           />
           <TaskCounter
-            count={3}
+            count={
+              data && countTasks(data, Status.completed)
+            }
             status={Status.completed}
           />
         </Grid>
