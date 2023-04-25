@@ -4,7 +4,13 @@ import {
   Alert,
   LinearProgress,
 } from '@mui/material';
-import React, { FC, ReactElement, useRef } from 'react';
+import React, {
+  FC,
+  ReactElement,
+  useRef,
+  useContext,
+  useEffect,
+} from 'react';
 import { format } from 'date-fns';
 import { TaskCounter } from './taskCounter';
 import { Status } from '../sidebar/createTaskForm/enums/Status';
@@ -14,11 +20,16 @@ import { sendApiRequest } from '../../helpers/sendApiRequest';
 import { ITaskApi } from './interfaces/ITaskAPI';
 import IUpdateTask from './task/interface/IUpdateTask';
 import { countTasks } from './taskCounter/helpers/countTasks';
+import { TaskStatusChangedContext } from '../../context';
 
 export const TaskArea: FC = (): ReactElement => {
-  const taskRef = useRef<HTMLElement | null>(null);
+  // const taskRef = useRef<HTMLElement | null>(null);
 
-  const { error, isLoading, data } = useQuery(
+  const tasksUpdatedContext = useContext(
+    TaskStatusChangedContext,
+  );
+
+  const { error, isLoading, data, refetch } = useQuery(
     'tasks',
     async () => {
       return await sendApiRequest<ITaskApi[]>(
@@ -37,6 +48,16 @@ export const TaskArea: FC = (): ReactElement => {
         data,
       ),
   );
+
+  useEffect(() => {
+    refetch();
+  }, [tasksUpdatedContext.updated]);
+
+  useEffect(() => {
+    if (updateTaskMutation.isSuccess) {
+      tasksUpdatedContext.toggle();
+    }
+  }, [updateTaskMutation.isSuccess]);
 
   function onStatusChangeHandler(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -60,9 +81,11 @@ export const TaskArea: FC = (): ReactElement => {
       id,
       status: Status.completed,
     });
+    /*
     if (taskRef.current) {
       taskRef.current.remove();
     }
+    */
   }
 
   return (
@@ -136,7 +159,7 @@ export const TaskArea: FC = (): ReactElement => {
               data.map((each, index) => {
                 return each.status === Status.todo ||
                   each.status === Status.inProgress ? (
-                  <Box ref={taskRef}>
+                  <Box>
                     <Task
                       key={index + each.priority}
                       id={each.id}
